@@ -96,6 +96,7 @@ sin = math.sin
 cos = math.cos
 pi = math.pi
 
+# accurate equetion salvation
 koef = 32 / (pi ** 4)
 sum = 0
 
