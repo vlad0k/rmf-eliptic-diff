@@ -1,12 +1,17 @@
 import math
+from math import pi
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 # step of the grid
-x = y = 41
-a = b = 1
-h = hx = hy = a / (x - 1)
+x = y = 11
+a = 2*pi
+b = 1
+a0 = 0
+b0 = 0.5
+hx = (a-a0) / (x - 1)
+hy = (b - b0) / (x - 1)
 
 
 def toFixed(numObj, digits=0):
@@ -45,28 +50,32 @@ def create_grid_U_numeration(x, y):
 
 
 def create_equation_system_matrix(hx, hy, x, y, U):
-		Result_matrix = []
-		left_equation_part = [[0.] for k in range(x * y)]
-		for j in range(y):
-				for i in range(x):
-						equation = [0. for i in range(x * y)]
-						if i == 0 or j == 0 or i == x - 1 or j == y - 1:
-								equation[U[j][i]] = 1.
-						else:
-								equation[U[j][i]] = -2 * ((1 / (hx ** 2)) + (1 / (hy ** 2)))
-								if (i - 1) >= 0:
-										equation[U[j][i - 1]] = 1 / (hx ** 2)
-								if (i + 1) < x:
-										equation[U[j][i + 1]] = 1 / (hx ** 2)
-								if (j - 1) >= 0:
-										equation[U[j - 1][i]] = 1 / (hy ** 2)
-								if (j + 1) < y:
-										equation[U[j + 1][i]] = 1 / (hy ** 2)
+  Result_matrix = []
+  left_equation_part = [[0.] for k in range(x * y)]
+  for j in range(y):
+    for i in range(x):
+      equation = [0. for i in range(x * y)]
+      r = j * hy + b0
+      if j == 0 or j == y - 1:
+        equation[U[j][i]] = 1.
+        left_equation_part[U[j][i]][0] = 0.5 if j == 0 else 1
+          
+      else:
+        equation[U[j][i]] = (-2 / (r * hy**2)) + (1 / (r * hy) + (-2 / (r**2 * hy ** 2)))
+        
+        if (i - 1) >= 0:
+            equation[U[j][i - 1]] = 1 / (r**2 * hx ** 2)
+        if (i + 1) < x:
+            equation[U[j][i + 1]] = 1 / (r**2 * hx ** 2)
+        if (j - 1) >= 0:
+            equation[U[j - 1][i]] = (1 / (hy ** 2)) - (1 / (r * hy))
+        if (j + 1) < y:
+            equation[U[j + 1][i]] = 1 / (hy ** 2)
 
-								left_equation_part[U[j][i]][0] = -2.
+        left_equation_part[U[j][i]][0] = -r
 
-						Result_matrix.append(equation)
-		return np.array(Result_matrix), np.array(left_equation_part)
+      Result_matrix.append(equation)
+  return np.array(Result_matrix), np.array(left_equation_part)
 
 
 def result_to_grid(R, U):
