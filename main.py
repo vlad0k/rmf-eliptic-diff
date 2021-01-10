@@ -6,7 +6,7 @@ import numpy as np
 # step of the grid
 x = y = 41
 a = b = 1
-h = hx = hy = a / (x - 1)
+h = hx = hy = a / (x - 1) 
 
 
 def toFixed(numObj, digits=0):

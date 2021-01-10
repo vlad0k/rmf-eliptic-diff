@@ -3,6 +3,7 @@ from math import pi
 
 import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pylab as pl
 
 # step of the grid
 x = y = 11
@@ -56,9 +57,12 @@ def create_equation_system_matrix(hx, hy, x, y, U):
     for i in range(x):
       equation = [0. for i in range(x * y)]
       r = j * hy + b0
-      if j == 0 or j == y - 1:
+      if j == 0 :
         equation[U[j][i]] = 1.
-        left_equation_part[U[j][i]][0] = 0.5 if j == 0 else 1
+        left_equation_part[U[j][i]][0] = 0
+      if j == y - 1 :
+        equation[U[j][i]] = 1.
+        left_equation_part[U[j][i]][0] =  1
           
       else:
         equation[U[j][i]] = (-2 / (r * hy**2)) + (1 / (r * hy) + (-2 / (r**2 * hy ** 2)))
@@ -106,39 +110,45 @@ sin = math.sin
 cos = math.cos
 pi = math.pi
 
-# accurate equetion salvation
-koef = 32 / (pi ** 4)
-sum = 0
 
-x = y = 0.5
-
-for m in range(0, 7):
-		for n in range(0, 7):
-				m1 = (2 * m + 1)
-				n1 = (2 * n + 1)
-				sum = sum + math.sin(m1 * pi * x) * math.sin(n1 * pi * y) / (m1 * n1 * (m1 ** 2 + n1 ** 2))
-
-res = sum * koef
-print(res)
+# def surface_plot(matrix):
+# 		# acquire the cartesian coordinate matrices from the matrix
+# 		# x is cols, y is rows
+# 		matrix = np.matrix(matrix)
+# 		(x,y) = np.meshgrid(np.arange(matrix.shape[0]), np.arange(matrix.shape[1]))
 
 
-def surface_plot(matrix, **kwargs):
-		# acquire the cartesian coordinate matrices from the matrix
-		# x is cols, y is rows
-		matrix = np.matrix(matrix)
-		(x, y) = np.meshgrid(np.arange(matrix.shape[0]), np.arange(matrix.shape[1]))
-		fig = plt.figure()
-		ax = fig.add_subplot(111, projection='3d')
-		surf = ax.plot_surface(x, y, matrix, **kwargs)
-		return (fig, ax, surf)
+# 		fig = plt.figure()
+# 		ax = fig.add_subplot(111, projection='3d')
+# 		surf = ax.plot_surface(x, y, matrix)
+# 		return (fig, ax, surf)
 
 
-(fig, ax, surf) = surface_plot(Result, cmap=plt.cm.coolwarm)
+# (fig, ax, surf) = surface_plot(Result, )
 
-fig.colorbar(surf)
+# fig.colorbar(surf)
 
-ax.set_xlabel('X (cols)')
-ax.set_ylabel('Y (rows)')
-ax.set_zlabel('Z (values)')
+# ax.set_xlabel('fi')
+# ax.set_ylabel('r')
+# ax.set_zlabel('U')
+
+# plt.show()
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+matrix = np.matrix(Result)
+(P, R) = np.meshgrid(np.arange(matrix.shape[0]), np.arange(matrix.shape[1]))
+R = [j * hy + b0 for j in R]
+P = [j * hx + a0 for j in P]
+# Express the mesh in the cartesian system.
+X, Y = R*np.cos(P), R*np.sin(P)
+
+# Plot the surface.
+ax.plot_surface(X, Y, np.matrix(Result), cmap=plt.cm.coolwarm)
+
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('U')
 
 plt.show()
